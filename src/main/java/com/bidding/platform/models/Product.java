@@ -1,7 +1,9 @@
 package com.bidding.platform.models;
 
+import com.bidding.platform.services.ProductStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +15,7 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "products")
+@Builder
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,5 +30,8 @@ public class Product {
     private LocalDateTime endTime;
 
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    private ProductStatus status;
 
 }

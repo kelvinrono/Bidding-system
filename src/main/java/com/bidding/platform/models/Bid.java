@@ -1,7 +1,9 @@
 package com.bidding.platform.models;
 
+import com.bidding.platform.services.BidStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +14,7 @@ import java.math.BigDecimal;
 @Entity
 @Data
 @Table(name = "bids")
+@Builder
 public class Bid {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,4 +30,7 @@ public class Bid {
 
     @Column(name = "bid_price")
     private BigDecimal bidPrice;
+
+    @Enumerated(EnumType.STRING)
+    private BidStatus status;
 }

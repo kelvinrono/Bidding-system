@@ -1,5 +1,6 @@
 package com.bidding.platform.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "doctor_id")
+    @Column(name = "user_id")
     private Long id;
     @Column(name = "first_name")
     private String firstName;
@@ -24,6 +25,7 @@ public class User {
     private String email;
     @Column(name = "phone_number")
     private String phoneNumber;
+    @JsonIgnore
     private String password;
     @ManyToOne(
             fetch = FetchType.EAGER

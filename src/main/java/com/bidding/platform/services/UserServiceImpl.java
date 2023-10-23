@@ -30,21 +30,26 @@ public class UserServiceImpl implements UserService {
             if(existingUser!=null){
                 response.put("message", "User already exist...");
             }
-            String encodedPassword = passwordEncoder.encode(userObject.getPassword());
-            User newUser = User.builder()
-                    .email(userObject.getEmail())
-                    .phoneNumber(userObject.getPhoneNumber())
-                    .firstName(userObject.getFirstName())
-                    .lastName(userObject.getLastName())
-                    .password(encodedPassword)
-                    .role(role)
-                    .build();
-            userRepository.save(newUser);
-            log.info("User has been saved successfully...");
+            else {
+                String encodedPassword = passwordEncoder.encode(userObject.getPassword());
+                User newUser = User.builder()
+                        .email(userObject.getEmail())
+                        .phoneNumber(userObject.getPhoneNumber())
+                        .firstName(userObject.getFirstName())
+                        .lastName(userObject.getLastName())
+                        .password(encodedPassword)
+                        .role(role)
+                        .build();
+                userRepository.save(newUser);
+                response.put("message", "User saved successfully.");
+
+                log.info("User has been saved successfully...");
+            }
         }
         catch (Exception e){
             log.info(e.getMessage());
             e.printStackTrace();
+            response.put("message", "Oops!Something went wrong!");
         }
 
         return response;
