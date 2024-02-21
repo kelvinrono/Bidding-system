@@ -20,6 +20,7 @@ public class BidObject {
     private Long user;
 
     private Long product;
+    private Long category;
     private BigDecimal bidPrice;
     private String status;
 }

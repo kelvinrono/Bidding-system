@@ -5,6 +5,7 @@ import com.bidding.platform.models.Product;
 import com.bidding.platform.models.User;
 import com.bidding.platform.objects.BidObject;
 import com.bidding.platform.repositories.BidRepository;
+import com.bidding.platform.repositories.CategoryRepository;
 import com.bidding.platform.repositories.ProductRepository;
 import com.bidding.platform.repositories.UserRepository;
 import jakarta.transaction.Transactional;
@@ -12,7 +13,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import javax.swing.table.TableRowSorter;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -24,16 +24,17 @@ public class BidServiceImpl implements BidService {
     private final BidRepository bidRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
 
 
     @Override
     public HashMap placeBid(BidObject bidObject) {
-        HashMap<String, String> response = new HashMap<>();
+        HashMap<String, Object> response = new HashMap<>();
         try {
             User user = userRepository.findById(bidObject.getUser()).orElseThrow(()-> new IllegalArgumentException("User does not exist"));
             Product product = productRepository.findById(bidObject.getProduct()).orElseThrow(()-> new IllegalArgumentException("Product does not exist"));
             Bid existingBid = bidRepository.findByProductAndUser(product, user);
-//            Product expiredBid = productRepository.fin
+
             if(existingBid==null){
                 Bid newBid = Bid.builder()
                         .bidPrice(bidObject.getBidPrice())
@@ -44,27 +45,33 @@ public class BidServiceImpl implements BidService {
                         .build();
                 bidRepository.save(newBid);
                 response.put("message", "bid placed successfully. You will be notified on your status when the bid is closed!");
-                response.put("status", "200");
+                response.put("status", true);
             }
             else {
                     response.put("message", "You have already placed this bid");
+                    response.put("status", false);
             }
-        }catch (Exception e){
+        }
+        catch (Exception e){
             e.printStackTrace();
             response.put("Message", "Ooops! Something went wrong!");
+            response.put("status", false);
         }
         return response;
     }
 
     @Override
-    public List<Bid> getMyBids(long id) {
+    public HashMap getMyBids(long id) {
+        HashMap<String,Object> response = new HashMap<>();
         try {
-            return bidRepository.findByUser_Id(id);
+            List<Bid> myBids= bidRepository.findAllByUser_Id(id);
+            for (Bid bid: myBids)
+            response.put("products", bid.getProduct());
         }
         catch (Exception e){
             e.printStackTrace();
         }
-        return null;
+        return response;
     }
 
     @Override
@@ -74,8 +81,8 @@ public class BidServiceImpl implements BidService {
         }
         catch (Exception e){
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
     @Override
@@ -117,7 +124,7 @@ public class BidServiceImpl implements BidService {
 
     @Transactional
     public void closeExpiredBids(){
-        System.out.println("SCHEDULER RUNNING");
+        System.out.println("SCHEDULER RUNNING (CHECKING CLOSED BIDS)");
      List<Product> products = productRepository.findByEndTimeBeforeAndStatusEquals(LocalDateTime.now(), ProductStatus.OPEN);
      for (Product product: products){
          product.setStatus(ProductStatus.CLOSED);
@@ -125,7 +132,7 @@ public class BidServiceImpl implements BidService {
      }
     }
 
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 60000)
     public void scheduleCloseExpiredBids(){
         closeExpiredBids();
     }

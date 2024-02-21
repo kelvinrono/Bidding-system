@@ -19,4 +19,6 @@ public class ProductObject {
     private LocalDateTime endTime;
 
     private String description;
+
+    private Long category;
 }

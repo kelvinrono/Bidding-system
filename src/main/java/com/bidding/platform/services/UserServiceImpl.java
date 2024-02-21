@@ -23,12 +23,13 @@ public class UserServiceImpl implements UserService {
     private final RolesRepository rolesRepository;
     @Override
     public HashMap saveUser(UserObject userObject) {
-        HashMap<String, String> response = new HashMap<>();
+        HashMap<String, Object> response = new HashMap<>();
         try {
             User existingUser = userRepository.findByEmail(userObject.getEmail());
             Roles role = rolesRepository.findById(userObject.getRole()).orElseThrow(()-> new IllegalArgumentException("Role does not exist"));
             if(existingUser!=null){
                 response.put("message", "User already exist...");
+                response.put("status", false);
             }
             else {
                 String encodedPassword = passwordEncoder.encode(userObject.getPassword());

@@ -24,7 +24,7 @@ public class BidController {
         return bidService.cancelBid(id);
     }
     @GetMapping("/get-my-bids/{id}")
-    public List<Bid> getmyBids(@PathVariable("id") long id){
+    public HashMap getmyBids(@PathVariable("id") long id){
         return bidService.getMyBids(id);
     }
 }

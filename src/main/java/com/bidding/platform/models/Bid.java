@@ -33,4 +33,11 @@ public class Bid {
 
     @Enumerated(EnumType.STRING)
     private BidStatus status;
+
+    public Bid(Long id,BigDecimal price, BidStatus status, Product product){
+        this.id = id;
+        this.bidPrice = price;
+        this.status = status;
+        this.product = product;
+    }
 }

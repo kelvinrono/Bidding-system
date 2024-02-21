@@ -30,6 +30,11 @@ public class Product {
     private LocalDateTime endTime;
 
     private String description;
+    @ManyToOne(
+            cascade = CascadeType.ALL
+    )
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @Enumerated(EnumType.STRING)
     private ProductStatus status;

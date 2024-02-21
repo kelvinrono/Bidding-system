@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface BidService {
     HashMap placeBid(BidObject bidObject);
-    List<Bid> getMyBids(long id);
+    HashMap getMyBids(long id);
     List<Bid> getAllBids();
     HashMap cancelBid(long id);
     HashMap bidAgain(BidObject bidObject);

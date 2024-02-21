@@ -1,7 +1,9 @@
 package com.bidding.platform.services;
 
+import com.bidding.platform.models.Category;
 import com.bidding.platform.models.Product;
 import com.bidding.platform.objects.ProductObject;
+import com.bidding.platform.repositories.CategoryRepository;
 import com.bidding.platform.repositories.ProductRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +20,13 @@ import java.util.OptionalInt;
 @Slf4j
 public class ProductServiceImpl implements ProductService{
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
     @Override
     public HashMap saveProduct(ProductObject productObject) {
-        HashMap<String, String> response = new HashMap<>();
+        HashMap<String, Object> response = new HashMap<>();
         try {
             Product existingProduct = productRepository.findByName(productObject.getName());
+            Category category = categoryRepository.findById(productObject.getCategory()).orElseThrow(()-> new IllegalArgumentException("Category id does not exist"));
             if (existingProduct==null){
                 Product newProduct = Product.builder()
                         .name(productObject.getName())
@@ -30,6 +34,7 @@ public class ProductServiceImpl implements ProductService{
                         .description(productObject.getDescription())
                         .startingPrice(productObject.getStartingPrice())
                         .status(ProductStatus.OPEN)
+                        .category(category)
                         .build();
                 productRepository.save(newProduct);
                 log.info("Product saved successfully....");
@@ -38,6 +43,7 @@ public class ProductServiceImpl implements ProductService{
             }
             else {
                 response.put("message", "Product with that name already exists");
+                response.put("status", false);
             }
         }
         catch (Exception e){
